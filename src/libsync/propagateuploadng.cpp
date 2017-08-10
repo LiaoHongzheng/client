@@ -502,4 +502,16 @@ void PropagateUploadFileNG::slotUploadProgress(qint64 sent, qint64 total)
     }
     propagator()->reportProgress(*_item, _sent + sent - total);
 }
+
+
+void PropagateUploadFileNG::abort()
+{
+    foreach (AbstractNetworkJob *job, _jobs) {
+        // Abort only PUT and MKDIR jobs, since abording MoveJob
+        // might result in conflict.
+        if (job->reply() && !job->inherits("OCC::MoveJob")) {
+            job->reply()->abort();
+        }
+    }
+}
 }

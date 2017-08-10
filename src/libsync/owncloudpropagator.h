@@ -214,6 +214,16 @@ public:
     {
         foreach (PropagatorJob *j, _runningJobs)
             j->abort();
+
+        // Give running jobs max 5 seconds to finish on their own, otherwise
+        // continue (that might result in conflicts owncloud/client/issues/5949)
+        int retriesNo = 5;
+        for(int i = 0; i < retriesNo ; i++) {
+            if (_runningJobs.size() == 0) {
+                break;
+            }
+            Utility::sleep(1);
+        }
     }
 
     qint64 committedDiskSpace() const Q_DECL_OVERRIDE;
